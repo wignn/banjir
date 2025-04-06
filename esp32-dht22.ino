@@ -19,7 +19,7 @@ const int BUZZER_PIN = 27;
 int limit = 400;
 long duration;
 float distanceCm;
-const char* url = "localhost:8000/api/alert"; 
+const char* url = "https://1574-125-160-129-83.ngrok-free.app/api/whatsapp";
 
 void setup() {
   Serial.begin(9600);
@@ -84,28 +84,27 @@ void send_alert(float temperature, float humidity, float waterLevel) {
 }
 
 void check_flood_level(float temperature, float humidity) {
-  if (distanceCm > limit) {  
-    digitalWrite(RED, HIGH);
-    digitalWrite(YELLOW, LOW);
-    digitalWrite(GREEN, LOW);
-    digitalWrite(BUZZER_PIN, HIGH);
-    tone(BUZZER_PIN, 1000);
-    send_alert(temperature, humidity, distanceCm);
+if (distanceCm < (2 * limit / 3)) {  
+  digitalWrite(RED, HIGH);
+  digitalWrite(YELLOW, LOW);
+  digitalWrite(GREEN, LOW);
+  digitalWrite(BUZZER_PIN, HIGH);
+  tone(BUZZER_PIN, 1000);
+  send_alert(temperature, humidity, distanceCm);
+} else if (distanceCm >= (2 * limit / 3) && distanceCm < limit) {
+  digitalWrite(RED, LOW);
+  digitalWrite(YELLOW, HIGH);
+  digitalWrite(GREEN, LOW);
+  digitalWrite(BUZZER_PIN, LOW);
+  noTone(BUZZER_PIN);
+} else {
+  digitalWrite(RED, LOW);
+  digitalWrite(YELLOW, LOW);
+  digitalWrite(GREEN, HIGH);
+  digitalWrite(BUZZER_PIN, LOW);
+  noTone(BUZZER_PIN);
+}
 
-  } else if (distanceCm <= limit && distanceCm >= (2 * limit / 3)) {  
-   digitalWrite(RED, LOW);
-    digitalWrite(YELLOW, HIGH);
-    digitalWrite(GREEN, LOW);
-    digitalWrite(BUZZER_PIN, LOW);
-    noTone(BUZZER_PIN);
-
-  } else if (distanceCm < (2 * limit / 3) && distanceCm >= 0) {  
-   digitalWrite(RED, LOW);
-    digitalWrite(YELLOW, LOW);
-    digitalWrite(GREEN, HIGH);
-    digitalWrite(BUZZER_PIN, LOW);
-    noTone(BUZZER_PIN);
-  }
 }
 
 
